@@ -40,13 +40,12 @@ const scheduleData = {
   }
 } as const
 
-type Props = {
-  params: {
-    slug: string
-  }
+interface PageProps {
+  params: { slug: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default function SchedulePage({ params }: Props) {
+export default function SchedulePage({ params }: PageProps) {
   const schedule = scheduleData[params.slug as keyof typeof scheduleData]
 
   if (!schedule) {
