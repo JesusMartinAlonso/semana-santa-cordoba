@@ -38,9 +38,15 @@ const scheduleData = {
     imageUrl: "/images/domingo_de_resurreccion.png",
     alt: "Horarios Domingo de Resurrección"
   }
+} as const
+
+type Props = {
+  params: {
+    slug: string
+  }
 }
 
-export default function SchedulePage({ params }: { params: { slug: string } }) {
+export default function SchedulePage({ params }: Props) {
   const schedule = scheduleData[params.slug as keyof typeof scheduleData]
 
   if (!schedule) {
