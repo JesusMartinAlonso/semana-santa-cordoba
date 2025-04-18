@@ -16,7 +16,7 @@ export default function PTVPage() {
       </div>
       <div className="flex-1 w-full">
         <iframe
-          src="https://www.youtube.com/embed/6VzN3me83IU"
+          src="https://www.youtube.com/embed/Xq9dTcNWbQw"
           title="PTV Córdoba"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen

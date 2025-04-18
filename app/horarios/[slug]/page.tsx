@@ -40,13 +40,16 @@ const scheduleData = {
   }
 } as const
 
-type GenerateMetadata = {
-  params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+type SearchParamsType = { [key: string]: string | string[] | undefined }
+
+interface PageProps {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<SearchParamsType>
 }
 
-export default function SchedulePage(props: GenerateMetadata) {
-  const schedule = scheduleData[props.params.slug as keyof typeof scheduleData]
+export default async function SchedulePage({ params }: PageProps) {
+  const resolvedParams = await params
+  const schedule = scheduleData[resolvedParams.slug as keyof typeof scheduleData]
 
   if (!schedule) {
     notFound()
