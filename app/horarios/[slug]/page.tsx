@@ -40,13 +40,13 @@ const scheduleData = {
   }
 } as const
 
-type PageProps = {
+type GenerateMetadata = {
   params: { slug: string }
-  searchParams?: Record<string, string | string[] | undefined>
+  searchParams: { [key: string]: string | string[] | undefined }
 }
 
-export default async function SchedulePage({ params }: PageProps) {
-  const schedule = scheduleData[params.slug as keyof typeof scheduleData]
+export default function SchedulePage(props: GenerateMetadata) {
+  const schedule = scheduleData[props.params.slug as keyof typeof scheduleData]
 
   if (!schedule) {
     notFound()
