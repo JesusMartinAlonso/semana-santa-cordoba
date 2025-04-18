@@ -40,12 +40,12 @@ const scheduleData = {
   }
 } as const
 
-interface PageProps {
+type PageProps = {
   params: { slug: string }
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams?: Record<string, string | string[] | undefined>
 }
 
-export default function SchedulePage({ params }: PageProps) {
+export default async function SchedulePage({ params }: PageProps) {
   const schedule = scheduleData[params.slug as keyof typeof scheduleData]
 
   if (!schedule) {
