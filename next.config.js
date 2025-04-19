@@ -9,6 +9,14 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: false,
   },
+  async rewrites() {
+    return [
+      {
+        source: '/twitter',
+        destination: '/twitter/page',
+      },
+    ]
+  },
 }
 
 module.exports = nextConfig 
