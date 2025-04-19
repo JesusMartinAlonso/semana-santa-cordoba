@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <main className="container mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold text-center mb-8">
-        Semana Santa Córdoba 2024
+        Semana Santa Córdoba 2025
       </h1>
       
       <div className="grid gap-8 md:grid-cols-2">

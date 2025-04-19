@@ -16,7 +16,7 @@ export default function RadarPage() {
       </div>
       <div className="flex-1 w-full">
         <iframe
-          src="http://panel.seguimeteo.com/radares/sevilla"
+          src="https://www.tiempo.com/radar-sevilla-LEZL-reflect.html"
           className="w-full h-full border-0"
         />
       </div>
