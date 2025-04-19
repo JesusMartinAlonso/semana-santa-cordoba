@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useRef, useState } from "react"
+import { Suspense } from "react";
 
 declare global {
   interface Window {
@@ -9,13 +10,15 @@ declare global {
   }
 }
 
-export default function TwitterPage() {
+function TwitterTimeline() {
   const timelineContainer = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadTwitterTimeline = async (): Promise<void> => {
+      if (typeof window === 'undefined') return; // Guard against SSR
+
       try {
         // Load Twitter widgets script
         const script = document.createElement("script");
@@ -31,59 +34,39 @@ export default function TwitterPage() {
 
         await scriptLoadPromise;
         
-        if (timelineContainer.current) {
-          try {
-            // Try to create timeline with list ID first
-            const widget = await window.twttr.widgets.createTimeline(
-              {
-                sourceType: "list",
-                id: "1779841906597892096" // Example list ID - replace with your actual list ID
-              },
-              timelineContainer.current,
-              {
-                height: "100%",
-                chrome: "noheader nofooter noborders transparent",
-                theme: "light",
-              }
-            );
-
-            if (widget) {
-              console.log("Timeline loaded successfully");
-              setIsLoading(false);
-              return;
-            }
-          } catch (err) {
-            console.error("Failed to load timeline:", err);
-            // Fallback to profile timeline
-            try {
-              const fallbackWidget = await window.twttr.widgets.createTimeline(
-                {
-                  sourceType: "profile",
-                  screenName: "HermandadesCor" // Try alternative handle
-                },
-                timelineContainer.current,
-                {
-                  height: "100%",
-                  chrome: "noheader nofooter noborders transparent",
-                  theme: "light",
-                }
-              );
-
-              if (fallbackWidget) {
-                setIsLoading(false);
-                return;
-              }
-            } catch (finalErr) {
-              throw new Error("Failed to load fallback timeline");
-            }
-          }
+        if (!timelineContainer.current) {
+          throw new Error("Container not found");
         }
 
-        throw new Error("Container not found");
+        try {
+          // Try to create timeline with list ID first
+          const widget = await window.twttr.widgets.createTimeline(
+            {
+              sourceType: "profile",
+              screenName: "HermandadesCor"
+            },
+            timelineContainer.current,
+            {
+              height: "100%",
+              chrome: "noheader nofooter noborders transparent",
+              theme: "light",
+            }
+          );
+
+          if (widget) {
+            console.log("Timeline loaded successfully");
+            setIsLoading(false);
+            return;
+          }
+          
+          throw new Error("Widget creation failed");
+        } catch (err) {
+          console.error("Failed to load timeline:", err);
+          throw err;
+        }
       } catch (err) {
         console.error("Twitter timeline error:", err);
         setError("No se pudo cargar la línea de tiempo de Twitter. Por favor, inténtelo de nuevo más tarde.");
-        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }
@@ -99,6 +82,26 @@ export default function TwitterPage() {
     };
   }, []);
 
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <div className="text-red-500">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={timelineContainer} className="w-full h-full">
+      {isLoading && (
+        <div className="flex items-center justify-center h-full">
+          <div className="animate-pulse">Cargando tweets de Semana Santa Córdoba...</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function TwitterPage() {
   return (
     <div className="fixed inset-0 flex flex-col">
       <div className="p-4 bg-background">
@@ -113,22 +116,14 @@ export default function TwitterPage() {
         </div>
       </div>
       <div className="flex-1 w-full bg-background overflow-hidden">
-        <div 
-          ref={timelineContainer}
-          className="w-full h-full"
-        >
-          {isLoading && (
-            <div className="flex items-center justify-center h-full">
-              <div className="animate-pulse">Cargando tweets de Semana Santa Córdoba...</div>
-            </div>
-          )}
-          {error && (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-red-500">{error}</div>
-            </div>
-          )}
-        </div>
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-full">
+            <div className="animate-pulse">Cargando...</div>
+          </div>
+        }>
+          <TwitterTimeline />
+        </Suspense>
       </div>
     </div>
-  )
+  );
 } 
